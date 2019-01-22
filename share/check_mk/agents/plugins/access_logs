@@ -13,7 +13,12 @@ import string
 
 # defaults
 
-log_files = ( "/var/log/tomcat7/access.*.log",  "/var/log/tomcat8/access.*.log", "/var/log/apache2/access.log", "/var/log/nginx/access.log" )
+log_files = ( "/var/log/tomcat6/access.*.log",
+              "/var/log/tomcat7/access.*.log",
+              "/var/log/tomcat8/access.*.log", 
+              "/var/log/apache2/access.log", 
+              "/var/log/apache2/access_log", 
+              "/var/log/nginx/access.log" )
 
 line_regexps = ( r'^(?:\S+\s+)+\[(?P<date>[^\]]+) \+\d\d\d\d\]\s+"[^"]+"\s+(?P<status>\d+)',
                )
