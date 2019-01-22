@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import glob
 import os
@@ -7,6 +7,7 @@ import sys
 import subprocess
 import re
 import datetime
+import string
 
 
 
@@ -58,7 +59,7 @@ def read_backwards(filename):
         (stdout, stderr) = p_tac.communicate()
     if stdout:
 
-        for line in str.split(stdout.decode("utf-8"), '\n'):
+        for line in string.split(stdout.decode("utf-8"), '\n'):
             if line:
                 yield line
 
