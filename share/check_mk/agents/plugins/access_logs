@@ -73,6 +73,11 @@ class NoDateFormatString(Exception):
 class NoLineRegexp(Exception):
     pass
 
+def total_seconds(dt):
+    if hasattr(dt, 'total_seconds'):
+        return dt.total_seconds()
+    else:
+        return (dt.microseconds + (dt.seconds + dt.days * 24 * 3600) * 10**6) / 10**6
 
 def read_file_pattern(pattern, read_back):
 
@@ -117,7 +122,7 @@ def read_file_pattern(pattern, read_back):
                     line_date = datetime.datetime.strptime(match.group("date"),date_format)
         
                     delta = now - line_date
-                    if delta.total_seconds() < read_back:
+                    if total_seconds(delta) < read_back:
                         if not match.group("status") in result:
                             result[match.group("status")] = 0
                         result[match.group("status")] += 1
@@ -133,9 +138,8 @@ def read_file_pattern(pattern, read_back):
         print("error: No suitable regular expression configured to extract date and status code from line '"+str(e)+"'")
 
     if result:
-        for code,counter in result.items():
-            print(code,counter)
-
+        for code, counter in result.items():
+            print(str(code)+" "+str(counter))
 
 
 print('<<<access_logs>>>')
