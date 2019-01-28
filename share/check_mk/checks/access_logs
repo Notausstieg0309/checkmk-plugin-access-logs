@@ -2,7 +2,7 @@
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 
 def parse_access_logs(info):
-    
+
     block = None
     result = {}
     for line in info:
@@ -43,31 +43,52 @@ def check_access_logs(item, params, parsed):
                  'XXX': '[06-9]\d\d',
                  'no_status': '\d*\D+\d*',
                 }
-    
+
     good_requests = ('200', '2XX', '3XX')
     counter = {}
     request_sum = 0
+    failure_rate = 0.0
+
+    severity = 0 # OK
+    text = ""
+    perfdata = []
 
     for key in base_regex.keys():
         counter[key] = 0
 
+    if item in parsed:
+        if parsed[item]:
+            for line in parsed[item]:
+                (code, requests) = line
 
-    for line in parsed[item]:
-        (code, requests) = line
+                for key, value in base_regex.iteritems():
+                    if re.match(value, code):
+                        counter[key] += int(requests)
+                request_sum += int(requests)
 
-        for key, value in base_regex.iteritems():
-            if re.match(value, code):
-                counter[key] += int(requests)
-        request_sum += int(requests)
+                if request_sum > 0:
+                    failure_rate = 100.0 - ((float(sum([counter[x] for x in good_requests])/float(request_sum)))*100.0)
 
-    
-    failure_rate = 0.0
-    
-    if request_sum > 0:
-        failure_rate = 100.0 - ((float(sum([counter[x] for x in good_requests])/float(request_sum)))*100.0)
+                text = ("failure rate %0.2f%%i for %d requests" % (failure_rate, request_sum))
 
-    perfdata = []
-    text = ""
+                if params:
+                    if "failure_rate" in params:
+                        (warn, crit) = params["failure_rate"]
+
+                        if failure_rate > crit:
+                            severity = 2
+                            text += " (over %0.2f%%)" % crit
+                        elif failure_rate > warn:
+                            severity = 1
+                            text += " (over %0.2f%%)" % warn
+        else:
+            text = "no new request in access log found"
+
+
+    else:
+        severity = 3 # UNKN
+        text = "item not present in agent output"
+
 
     for key in counter.keys():
         perfdata.append((key, counter[key]))
@@ -76,8 +97,8 @@ def check_access_logs(item, params, parsed):
 
     perfdata.append( ("failure_rate", failure_rate) )
 
-    text = ("failure rate %0.2f%%" % failure_rate)
-    return (0,text , perfdata)
+    return (severity, text , perfdata)
+
 
 check_info["access_logs"] = {
                             'check_function':          check_access_logs,
