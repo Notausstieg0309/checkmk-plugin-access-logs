@@ -69,7 +69,7 @@ def check_access_logs(item, params, parsed):
                 if request_sum > 0:
                     failure_rate = 100.0 - ((float(sum([counter[x] for x in good_requests])/float(request_sum)))*100.0)
 
-                text = ("failure rate %0.2f%%i for %d requests" % (failure_rate, request_sum))
+                text = ("failure rate %0.2f%% for %d requests" % (failure_rate, request_sum))
 
                 if params:
                     if "failure_rate" in params:
