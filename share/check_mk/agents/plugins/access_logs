@@ -10,8 +10,8 @@ import datetime
 import string
 
 
-
 # defaults
+
 
 log_files = ( "/var/log/tomcat6/access.*.log",
               "/var/log/tomcat7/access.*.log",
@@ -36,12 +36,21 @@ if not os.path.exists(config_file):
 
 if os.path.exists(config_file):
     exec(open(config_file).read())
-    
+
 if not all(x in globals() for x in ["log_files", "line_regexps", "date_formats", "read_back"]):
     print("<<<access_logs>>>")
     print("error: missing config values")
     sys.exit()
-    
+
+
+def total_seconds(dt):
+    # Keep backward compatibility with Python 2.6 which doesn't have
+    # this method
+    if hasattr(dt, 'total_seconds'):
+        return dt.total_seconds()
+    else:
+        return (dt.microseconds + (dt.seconds + dt.days * 24 * 3600) * 10**6) / 10**6
+
 
 def get_files(search_dir):
 
@@ -54,7 +63,7 @@ def read_backwards(filename):
     stdout = None
     if filename.endswith(".gz"):
         p_gzip = subprocess.Popen(["gzip", "-cd", filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    
+
         p_tac = subprocess.Popen(["tac"], stdin=p_gzip.stdout, stdout=subprocess.PIPE)
         p_gzip.stdout.close()
         (stdout, stderr) = p_tac.communicate()
@@ -81,8 +90,8 @@ class NoLineRegexp(Exception):
 
 def read_file_pattern(pattern, read_back):
 
-    files = get_files(pattern)	
-	
+    files = get_files(pattern)
+
     result = {}
 
     regexp = None
@@ -120,9 +129,9 @@ def read_file_pattern(pattern, read_back):
                             raise NoDateFormatString(match.group("date"))
 
                     line_date = datetime.datetime.strptime(match.group("date"),date_format)
-        
+
                     delta = now - line_date
-                    if delta.total_seconds() < read_back:
+                    if total_seconds(delta) < read_back:
                         if not match.group("status") in result:
                             result[match.group("status")] = 0
                         result[match.group("status")] += 1
@@ -139,12 +148,10 @@ def read_file_pattern(pattern, read_back):
 
     if result:
         for code,counter in result.items():
-            print(code,counter)
-
+            print(str(code)+" "+str(counter))
 
 
 print('<<<access_logs>>>')
 for item in log_files:
     read_file_pattern(item, read_back)
-
 
