@@ -9,26 +9,28 @@ import re
 import datetime
 import string
 
+# default values
+default_log_files = (
+    "/var/log/tomcat6/access.*.log",
+    "/var/log/tomcat7/access.*.log",
+    "/var/log/tomcat8/access.*.log",
+    "/var/log/apache2/access.log",
+    "/var/log/apache2/access_log",
+    "/var/log/httpd/access_log",
+    "/var/log/httpd/access.log",
+    "/var/log/nginx/access.log"
+)
 
-# defaults
+default_line_regexps = ( r'^(?:\S+\s+)+\[(?P<date>[^\]]+) \+\d\d\d\d\]\s+"[^"]*"\s+(?P<status>\d+)', )
+
+default_date_formats = ( "%d/%b/%Y:%H:%M:%S", )
 
 
-log_files = ( "/var/log/tomcat6/access.*.log",
-              "/var/log/tomcat7/access.*.log",
-              "/var/log/tomcat8/access.*.log", 
-              "/var/log/apache2/access.log", 
-              "/var/log/apache2/access_log", 
-              "/var/log/httpd/access_log",
-              "/var/log/httpd/access.log",
-              "/var/log/nginx/access.log"
-            )
-
-line_regexps = ( r'^(?:\S+\s+)+\[(?P<date>[^\]]+) \+\d\d\d\d\]\s+"[^"]*"\s+(?P<status>\d+)',
-               )
-
-date_formats = ( "%d/%b/%Y:%H:%M:%S", )
-
-read_back = 60
+# configurable variables
+log_files = []
+line_regexps = []
+date_formats = []
+read_back = 300
 
 
 config_dir = os.getenv("MK_CONFDIR", "/etc/check_mk")
@@ -39,6 +41,11 @@ if not os.path.exists(config_file):
 
 if os.path.exists(config_file):
     exec(open(config_file).read())
+
+# add default list items to configured values
+log_files.extend(default_log_files)
+line_regexps.extend(default_line_regexps)
+date_formats.extend(default_date_formats)
 
 if not all(x in globals() for x in ["log_files", "line_regexps", "date_formats", "read_back"]):
     print("<<<access_logs>>>")
