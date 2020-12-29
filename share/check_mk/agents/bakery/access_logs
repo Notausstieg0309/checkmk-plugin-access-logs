@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+def bake_access_logs(opsys, conf, conf_dir, plugins_dir):
+    # copy agent plugin
+    shutil.copy2(cmk.utils.paths.local_agents_dir + "/plugins/access_logs", plugins_dir + "/access_logs")
+
+    # create config file if parameters are defined
+    if len(conf) > 0:
+        f = file(conf_dir + "/access_logs.conf", "w")
+        f.write(agent_file_header)
+
+        for key in conf:
+            f.write("%s = %r\n" % (key,  conf[key]))
+
+        f.close()
+
+bakery_info["access_logs"] = {
+    "bake_function": bake_access_logs,
+    "os": ["linux",],
+    "verify_python": True,
+}
