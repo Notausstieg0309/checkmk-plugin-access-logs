@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 import glob
 import os
@@ -83,7 +83,7 @@ def read_backwards(filename):
         (stdout, stderr) = p_tac.communicate()
     if stdout:
 
-        for line in string.split(stdout.decode("utf-8"), '\n'):
+        for line in stdout.decode("utf-8").split('\n'):
             if line:
                 yield line
 
@@ -157,7 +157,7 @@ def read_file_pattern(pattern, read_back):
         print("error: No suitable regular expression configured to extract date and status code from line '"+str(e)+"'")
 
     if result:
-        for code,counter in result.items():
+        for code,counter in result.iteritems():
             print(str(code)+" "+str(counter))
 
 
