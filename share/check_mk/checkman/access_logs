@@ -1,6 +1,6 @@
 title: HTTP Access Logs
 agents: linux
-author: Notausstieg0309 <Notausstieg0309@gmail.com>
+author: Notausstieg0309 <Notausstieg0309@googlemail.com>
 catalog: app/Webservers
 license: GPL
 distribution: check_mk
@@ -9,9 +9,10 @@ description:
  Currently Tomcat, Apache and Nginx are supported.
  It scans the last requests and sums up the number of requests per
  HTTP response code.
- You need to install the plugin {access_logs}
- into the {plugins} directory of your agent. On the target machine,
- the shell command {tac} must be present.
+ 
+ You need to install the plugin {access_logs.py} (Python 3) or 
+ {access_logs_2.py} (Python 2) into the {plugins} directory of your
+ agent. On the target machine, the shell command {tac} must be present.
 
  The check gets critical if you configured a maximum failure rate.
  By default, the check only collects the metrics and runs OK
