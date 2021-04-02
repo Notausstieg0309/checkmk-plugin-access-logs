@@ -40,8 +40,8 @@ metric_info["count_2XX"] = {
 
 # Status 3xx
 
-    "title" : _("3XX - Successful"),
 metric_info["count_3XX"] = {
+    "title" : _("3XX - Redirection"),
     "unit"  : "count",
     "color" : "24/a",
 }
