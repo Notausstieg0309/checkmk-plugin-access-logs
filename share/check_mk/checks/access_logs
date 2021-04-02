@@ -14,6 +14,9 @@ def parse_access_logs(info):
         else:
             result[block].append(line)
 
+        if line_complete.startswith("error:"):
+            result[block] = line_complete
+
     return result
 
 
@@ -57,7 +60,7 @@ def check_access_logs(item, params, parsed):
         counter[key] = 0
 
     if item in parsed:
-        if parsed[item]:
+        if parsed[item] and isinstance(parsed[item], list):
             for line in parsed[item]:
                 (code, requests) = line
 
@@ -81,6 +84,8 @@ def check_access_logs(item, params, parsed):
                         elif failure_rate > warn:
                             severity = 1
                             text += " (over %0.2f%%)" % warn
+        elif parsed[item] and isinstance(parsed[item], str):
+            raise Exception("error in agent plugin - " + parsed[item])
         else:
             text = "no new request in access log found"
 
