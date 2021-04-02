@@ -96,7 +96,7 @@ def check_access_logs(item, params, parsed):
 
 
     for key in counter.keys():
-        perfdata.append((key, counter[key]))
+        perfdata.append(("count_%s" % key, counter[key]))
 
     perfdata = sorted(perfdata, key=lambda x: x[0])
 
