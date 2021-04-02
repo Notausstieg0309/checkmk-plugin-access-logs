@@ -64,7 +64,7 @@ def check_access_logs(item, params, parsed):
             for line in parsed[item]:
                 (code, requests) = line
 
-                for key, value in base_regex.iteritems():
+                for key, value in base_regex.items():
                     if re.match(value, code):
                         counter[key] += int(requests)
                 request_sum += int(requests)
