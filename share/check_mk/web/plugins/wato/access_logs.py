@@ -1,32 +1,49 @@
-register_check_parameters(
-    subgroup_applications,
-    "access_logs",
-    _("HTTP Access Log"),
-    Dictionary(
-        elements = [
-            ("failure_rate",
-                Tuple(
-                title = _("check failure rate"),
-                elements = [
-                    Percentage(title = _("warning if higher than"), help = _("Generate a WARNING if the failure rate is higher than the configured value.") ),
-                    Percentage(title = _("critical if higher than"),  help= _("Generate a CRITICAL if the failure rate is higher than the configured value.") ),
-                    ]
-             )),
-        ],
-    ),
-    TextAscii(
-        title = _("log file"),
-        help = _("The full path of the logfile.")
-    ),
-    "dict"
+from cmk.gui.i18n import _
+
+from cmk.gui.valuespec import (
+    Dictionary,
+    TextAscii,
+    Alternative,
+    ListOfStrings,
+    RegExp,
+    FixedValue,
+    Tuple   
 )
 
 
-register_rule(
-    "agents/" + _("Agent Plugins"),
-    "agent_config:access_logs",
-    Alternative(
-        title = _("HTTP Access Logs"),
+
+from cmk.gui.plugins.wato import (
+    CheckParameterRulespecWithItem,
+    rulespec_registry,
+    RulespecGroupCheckParametersApplications,
+)
+
+
+
+def _item_valuespec_access_logs():
+    return TextAscii(
+        title = _("log file"),
+        help = _("The full path of the logfile.")
+    )
+
+def _parameter_valuespec_access_logs():
+    return Dictionary(
+		elements = [
+            ("failure_rate",
+                Tuple(
+                    title = _("check failure rate"),
+                    elements = [
+                        Percentage(title = _("warning if higher than"), help = _("Generate a WARNING if the failure rate is higher than the configured value.") ),
+                        Percentage(title = _("critical if higher than"),  help= _("Generate a CRITICAL if the failure rate is higher than the configured value.") ),
+                    ]
+                )
+            ),
+		],
+    )
+
+def _valuespec_agent_config_access_logs():
+    return Alternative(
+        title = _("HTTP Access Logs (Linux)"),
         help = _("This will deploy the agent plugin <tt>access_logs</tt> "
                  "for checking various HTTP access logs of webservers "
                  "like Apache, Nginx, Tomcat. It counts the latest number of requests "
@@ -93,8 +110,33 @@ register_rule(
             ),
             FixedValue(None, title = _("Do not deploy the HTTP Access Logs plugin"), totext = _("(disabled)") ),
         ],
-    ),
-    match="dict"
-)
+    )
 
+# Bakery Rule - new format, but should be located in ~/local/lib/check_mk/gui/cee/plugins/wato/agent_bakery/ or ~/local/lib/check_mk/gui/cee/plugins/wato/agent_bakery/rulespecs/ (???)
+
+# rulespec_registry.register(
+#    HostRulespec(
+#        group=RulespecGroupMonitoringAgentsAgentPlugins,
+#        name="agent_config:access_logs",
+#        valuespec=_valuespec_agent_config_access_logs,
+#    ))
+    
+# Bakery Rule - old format
+register_rule(
+    "agents/" + _("Agent Plugins"),
+    "agent_config:access_logs",
+    _valuespec_agent_config_access_logs(),
+    match="dict",
+)    
+
+# check parameters new format
+rulespec_registry.register(
+    CheckParameterRulespecWithItem(
+        check_group_name="access_logs",
+        group=RulespecGroupCheckParametersApplications,
+        match_type="dict",
+        item_spec=_item_valuespec_access_logs,
+        parameter_valuespec=_parameter_valuespec_access_logs,
+        title=lambda: _("HTTP Access Log"),
+    ))
 
