@@ -63,7 +63,7 @@ def check_access_logs(item, params, section):
         counter[key] = 0
 
     if not item in section:
-        yield Result(state=State.UNKN, summary="missing data in agent output")
+        yield Result(state=State.UNKNOWN, summary="file not found by agent")
         return
     
     if section[item] and isinstance(section[item], str):
