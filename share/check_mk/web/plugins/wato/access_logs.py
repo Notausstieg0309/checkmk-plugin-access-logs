@@ -75,7 +75,7 @@ def _valuespec_agent_config_access_logs():
                         default_value = 300
                      )
                    ),
-                   ( "line_regexp",
+                   ( "line_regexps",
                      ListOfStrings(
                         title = _("Line Regexp Patterns"),
                         help = _("A list of custom regular expression which will be applied against each line of the access log file to extract the date and response status."
