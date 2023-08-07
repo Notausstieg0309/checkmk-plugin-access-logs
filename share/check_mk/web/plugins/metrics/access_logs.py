@@ -133,7 +133,7 @@ metric_info["failure_rate"] = {
     "color" : "14/a",
 }
 
-graph_info.append({
+graph_info['count'] = {
    "title"         : ("HTTP Response Status Codes"),
    "metrics"       : [
                         ( "count_no_status", "area" ),
@@ -156,14 +156,14 @@ graph_info.append({
                         ( "count_101", "stack")
                      ],
     "omit_zero_metrics" : True,
-})
+}
 
-graph_info.append({
+graph_info['failure_rate] = {
    "title"         : ("HTTP Failure Rate"),
    "metrics"       : [
                         ( "failure_rate", "line")
                      ],
     "omit_zero_metrics" : True,
-})
+}
 
 
